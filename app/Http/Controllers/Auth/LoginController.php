@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -24,7 +27,7 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-    
+
     /**
      * Where to redirect users after login.
      *
@@ -48,7 +51,29 @@ class LoginController extends Controller
             'social_type' => ['required', 'in:google,github']
         ]);
         $socialType = $request->get('social_type');
-        Socialite::driver($socialType)->redirect();
+        Session::put('social_type', $socialType);
+        return Socialite::driver($socialType)->redirect();
+    }
+
+    public function loginCallback()
+    {
+        $socialType = Session::pull('social_type');
+        $userSocial = Socialite::driver($socialType)->user();
+        
+        $user = User::where('email', $userSocial->email)->first();
+        if(!$user){
+            $user = User::create([
+                'name' => $userSocial->name,
+                'email' => $userSocial->email,
+                // 'password' => bcrypt(Str::random(8)),
+                'password' => bcrypt('12345678'),
+                'role' => User::ROLE_USER,
+                'phone' => '000',
+                'cpf' => '000'
+            ]);
+        }
+        Auth::login($user);
+        return redirect()->intended($this->redirectPath());
     }
 
     public function redirectTo()

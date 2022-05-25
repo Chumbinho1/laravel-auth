@@ -185,7 +185,6 @@ return [
         /*
          * Package Service Providers...
          */
-        Laravel\Socialite\Facades\Socialite::class,
         /*
          * Application Service Providers...
          */

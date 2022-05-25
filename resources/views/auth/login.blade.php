@@ -69,7 +69,7 @@
                         @csrf
                         <div class="mt-2 text-center">
                             <button type="submit" class="btn btn-danger" value="google" name="social_type">{{ __('Login with Google') }}</button>
-                            <button type="submit" class="btn btn-secondary" value="githut" name="social_type">{{ __('Login with GitHub') }}</button>
+                            <button type="submit" class="btn btn-secondary" value="github" name="social_type">{{ __('Login with GitHub') }}</button>
 
                         </div>
                     </form>
